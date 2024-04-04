@@ -1,14 +1,17 @@
 const Blog = require('../models/blog');
+const User = require('../models/user');
+
 
 async function createBlog(req,res) {
     try{
         const{title, body, user} =req.body;
-        const blog = new Blog({title, body, user});
-        await blog.save();
+        const blogs = new Blog({title, body, user});
+        await blogs.save();
+        await User.findByIdAndUpdate(user, { $push: { blogs: blogs._id } });
         res.status(201).json({
             status: true,
             message: 'Blog Created Successfully',
-            data: blog
+            data: blogs
         })
     }catch(error){
         res.status(500).json({
@@ -22,7 +25,10 @@ async function createBlog(req,res) {
 
 async function getAllBlogs(req,res){
     try{
-        const blogs=await Blog.find().populate('user', 'userName email');
+        const blogs=await Blog.find()
+        .populate('user', 'userName email')
+        .populate('comments')
+        .exec();
         res.status(201).json({
             status:true,
             message:'All Blog Post retrieved successfully',
@@ -37,9 +43,12 @@ async function getAllBlogs(req,res){
     }
 }
 
-async function getBlogsById(req,res){
+async function getBlogById(req,res){
     try{
-        const blog=await Blog.findById(req.params.id).populate('user', 'userName email');
+        const blog=await Blog.findById(req.params.id)
+        .populate('user', 'userName email')
+        .populate('comments')
+        .exec();
         if(!blog){
             return res.status(404).json({
                 status:false,
@@ -62,7 +71,7 @@ async function getBlogsById(req,res){
 }
 
 
-async function updateBlogs(req,res){
+async function updateBlog(req,res){
     try{
         const {title, body}=req.body;
         const updatedBlog= await Blog.findByIdAndUpdate(req.params.id,{title,body}, {new:true});
@@ -86,3 +95,30 @@ async function updateBlogs(req,res){
         })
     }
 }
+
+
+async function deleteBlog(req,res){
+    try{
+        const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
+        if(!deletedBlog){
+            return res.status(404).json({
+                status: false,
+                message: 'Blog Post not Found',
+                data:null
+            })
+        }
+        res.status(200).json({
+            status: true,
+            message: 'Blog Post Deleted Succesfully',
+            data: null
+        })
+    }catch(error){
+        res.status(500).json({
+            status:false,
+            message:error.message,
+            data:null
+        })
+    }
+}
+
+module.exports= {createBlog, getAllBlogs, getBlogById, updateBlog, deleteBlog};

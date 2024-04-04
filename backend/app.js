@@ -1,6 +1,9 @@
 const express = require ('express');
 const mongoose = require ('mongoose');
 const userRoutes = require ('./routes/userRoutes');
+const blogRoutes = require ('./routes/blogRoutes');
+const commentRoutes = require ('./routes/commentRoutes');
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -16,6 +19,8 @@ mongoose.connect('mongodb://localhost:27017/node-project')
 });
 
 app.use(userRoutes);
+app.use(blogRoutes);
+app.use(commentRoutes);
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
