@@ -3,12 +3,13 @@ const mongoose = require ('mongoose');
 const userRoutes = require ('./routes/userRoutes');
 const blogRoutes = require ('./routes/blogRoutes');
 const commentRoutes = require ('./routes/commentRoutes');
-
+const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(cors());
 
 mongoose.connect('mongodb://localhost:27017/node-project')
 .then(() => {
@@ -20,7 +21,7 @@ mongoose.connect('mongodb://localhost:27017/node-project')
 
 app.use(userRoutes);
 app.use(blogRoutes);
-app.use(commentRoutes);
+app.use(commentRoutes); 
 
 app.use((err, req, res, next) => {
     console.error(err.stack);

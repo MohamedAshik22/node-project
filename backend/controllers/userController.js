@@ -2,9 +2,9 @@ const User = require('../models/user');
 
 
 async function createUser(req,res) {
+    const { userName, email } = req.body;
     try{
-        const { userName, email } = req.body;
-
+       
          const existingUser = await User.findOne({ $or: [{ userName }, { email }] });
         if (existingUser) {
             return res.status(400).json({
@@ -35,12 +35,6 @@ async function getUsers(req,res) {
     try{
         const { page =1, limit =10} = req.query;
         const users = await User.find()
-        .populate({
-            path: 'blogs',
-            populate: {
-                path: 'comments'
-            }
-        })
         .limit(limit*1)
         .skip((page-1)*limit)
         .exec();
@@ -68,12 +62,7 @@ async function getUsers(req,res) {
 async function getUserById (req,res){
     try{
         const user = await User.findById(req.params.id)
-        .populate({
-            path: 'blogs',
-            populate: {
-                path: 'comments'
-            }
-        });
+
         if(!user) {
             return res.status(404).json({
                 staus:false,
@@ -99,8 +88,8 @@ async function getUserById (req,res){
 
 async function updateUser(req,res){
     try{
-        const {userName, email, blogs} =req.body;
-        const user = await User.findByIdAndUpdate(req.params.id,{userName, email, blogs},{new:true});
+        const {userName, email} =req.body;
+        const user = await User.findByIdAndUpdate(req.params.id,{userName, email},{new:true});
         if (!user) {
             return res.status(404).json({
                 status:false,
