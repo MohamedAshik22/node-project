@@ -12,4 +12,10 @@ router.put('/users/:id', userController.updateUser);
 
 router.delete('/users/:id', userController.deleteUser);
 
+router.post('/login', userController.login); 
+
+router.get('/verifyToken', userController.verifyToken, (req, res) => {
+    res.status(200).json({ status: true, message: 'Token verified' });
+});
+
 module.exports= router;

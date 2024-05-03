@@ -1,11 +1,13 @@
 const User = require('../models/user');
+const blogs = require('../models/blog')
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
+async function createUser(req, res) {
+    const { userName, email, password } = req.body;
+    try {
 
-async function createUser(req,res) {
-    const { userName, email } = req.body;
-    try{
-       
-         const existingUser = await User.findOne({ $or: [{ userName }, { email }] });
+        const existingUser = await User.findOne({ $or: [{ userName }, { email }] });
         if (existingUser) {
             return res.status(400).json({
                 status: false,
@@ -13,16 +15,19 @@ async function createUser(req,res) {
                 data: null
             });
         }
-        const newUser = new User({userName, email});
+        const newUser = new User({ userName, email, password });
         await newUser.save();
+        const token = newUser.generateAccessToken();
+        const refToken = await newUser.generateRefreshToken();
         res.status(201).json({
             status: true,
             message: 'User Created Successfully',
-            data:newUser
-        
+            data: { user: newUser, token }
+
         });
-    }catch (error){
-        res.status(500).json({
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
             status: false,
             message: error.message || 'Something Went Wrong',
             data: null
@@ -31,26 +36,26 @@ async function createUser(req,res) {
 }
 
 
-async function getUsers(req,res) {
-    try{
-        const { page =1, limit =10} = req.query;
+async function getUsers(req, res) {
+    try {
+        const { page = 1, limit = 10 } = req.query;
         const users = await User.find()
-        .limit(limit*1)
-        .skip((page-1)*limit)
-        .exec();
-        const count= await User.countDocuments();
+            .limit(limit * 1)
+            .skip((page - 1) * limit)
+            .exec();
+        const count = await User.countDocuments();
         res.status(200).json({
-            status:true,
+            status: true,
             message: ' Users retrieved Successfully',
             data: {
                 users,
-                totalPages: Math.ceil(count/limit),
+                totalPages: Math.ceil(count / limit),
                 currentPage: page
             }
         })
-    }catch(error){
+    } catch (error) {
         res.status(500).json({
-            status:false,
+            status: false,
             message: error.message,
             data: null
         });
@@ -59,68 +64,71 @@ async function getUsers(req,res) {
 
 
 
-async function getUserById (req,res){
-    try{
+async function getUserById(req, res) {
+    try {
         const user = await User.findById(req.params.id)
-
-        if(!user) {
+        
+        if (!user) {
             return res.status(404).json({
-                staus:false,
+                staus: false,
                 message: 'User not Found',
                 data: null
             })
         }
-    
+
+        const userBlogs = blogs.filter(blog => blog.user._id.toString() === user._id.toString());
+
+
         res.status(200).json({
-            status:true,
+            status: true,
             message: 'User retrieved Successfully',
-            data: user
+            data: {user, blogs: userBlogs }
         })
-    }catch(error){
+    } catch (error) {
         res.status(500).json({
-            status:false,
-            message:error.message,
-            data:null
+            status: false,
+            message: error.message,
+            data: null
         })
     }
 }
 
 
-async function updateUser(req,res){
-    try{
-        const {userName, email} =req.body;
-        const user = await User.findByIdAndUpdate(req.params.id,{userName, email},{new:true});
+async function updateUser(req, res) {
+    try {
+        const { userName, email } = req.body;
+        const user = await User.findByIdAndUpdate(req.params.id, { userName, email }, { new: true });
         if (!user) {
             return res.status(404).json({
-                status:false,
+                status: false,
                 message: 'User not Found',
-                data:null
+                data: null
 
             })
         }
         res.status(200).json({
-            status:true,
-            message:'User updated successfully',
+            status: true,
+            message: 'User updated successfully',
             data: user
         })
-    }catch(error){
+    } catch (error) {
         res.status(500).json({
-            status:false,
-            message:error.message,
-            data:null
+            status: false,
+            message: error.message,
+            data: null
         })
     }
 }
 
 
-async function deleteUser(req,res){
-    try{
+async function deleteUser(req, res) {
+    try {
         const user = await User.findByIdAndDelete(req.params.id);
-        if(!user){
+        if (!user) {
             return res.status(404).json({
                 status: false,
                 message: 'User not Found',
-                data:null
+                data: null
             })
         }
         res.status(200).json({
@@ -128,13 +136,69 @@ async function deleteUser(req,res){
             message: 'User Deleted Succesfully',
             data: null
         })
-    }catch(error){
+    } catch (error) {
         res.status(500).json({
-            status:false,
-            message:error.message,
-            data:null
+            status: false,
+            message: error.message,
+            data: null
         })
     }
 }
 
-module.exports= {createUser, getUsers, getUserById, updateUser, deleteUser};
+async function login(req, res) {
+    const { email, password } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json(
+                {
+                    status: false,
+                    message: 'Invalid username or password'
+                });
+        }
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) {
+            return res.status(400).json(
+                {
+                    status: false,
+                    message: 'Invalid username or password'
+                });
+        }
+        const token = user.generateAccessToken();
+        res.status(200).json(
+            {
+                status: true,
+                message: 'Login successful',
+                data: { user, token }
+            });
+    } catch (error) {
+        res.status(500).json(
+            {
+                status: false,
+                message: error.message
+            });
+    }
+}
+
+function verifyToken(req, res, next) {
+    const token = req.header('Authorization');
+    if (!token)
+        return res.status(401).json(
+            {
+                status: false,
+                message: 'Access denied. No token provided.',
+            });
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        res.status(400).json(
+            {
+                status: false,
+                message: 'Invalid token.'
+            });
+    }
+}
+
+module.exports = { createUser, getUsers, getUserById, updateUser, deleteUser, login, verifyToken };

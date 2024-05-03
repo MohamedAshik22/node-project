@@ -1,22 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+// import LikeButton from './LikeButton';
 
 
-
-const LikeButton = () => {
-    const [likes, setLikes] = useState(0);
-
-    const handleLikeClick = () => {
-        setLikes(likes + 1);
-    };
-
-    return (
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleLikeClick}>
-            Like ({likes})
-        </button>
-    );
-};
 
 const Blogs = () => {
     const [blogs, setBlogs] = useState([]);
@@ -51,7 +38,7 @@ const Blogs = () => {
         navigate(`/blog-detail/${blogId}`);
     };
 
-   
+
 
     if (loading) {
         return <div>Loading...</div>;
@@ -70,11 +57,12 @@ const Blogs = () => {
                             <div className="text-xl font-semibold cursor-pointer" onClick={() => navigateToBlog(blog._id)}>{blog.title}</div>
                             <p className="mt-2">{blog.body}</p>
                             <div className="flex space-x-4">
-                                <LikeButton />
-                                <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Comment</button>
-                                <button className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">Share</button>
+                                {/* <LikeButton /> */}                                
+                                <button className="text-pink-500 hover:text-pink-700 font-bold py-1 px-2 rounded">Like</button>
+                                <button className="text-blue-500 hover:text-blue-700 font-bold py-1 px-2 rounded">Comment</button>
+                                <button className="text-purple-500 hover:text-purple-700 font-bold py-1 px-2 rounded">Share</button>
                             </div>
-                           
+
                         </div>
                     ))}
                 </div>

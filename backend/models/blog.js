@@ -12,10 +12,15 @@ const blogSchema = new mongoose.Schema ({
 
     body: String,
 
-    comments: {
+    comments: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comments'
 
+    }],
+
+    likes: {
+        type: Number,
+        default: 0
     }
 
   

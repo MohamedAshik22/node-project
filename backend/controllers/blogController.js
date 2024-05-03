@@ -121,4 +121,36 @@ async function deleteBlog(req,res){
     }
 }
 
-module.exports= {createBlog, getAllBlogs, getBlogById, updateBlog, deleteBlog};
+
+async function likeBlog(req, res) {
+    try {
+        const blogId = req.params.id;
+        const blog = await Blog.findById(blogId);
+        if (!blog) {
+            return res.status(404).json({
+                status: false,
+                message: 'Blog Post Not Found',
+                data: null
+            });
+        }
+
+        blog.likes += 1;
+        await blog.save();
+
+        res.status(200).json({
+            status: true,
+            message: 'Blog Post Liked Successfully',
+            likes: blog.likes,
+            data: blog
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            message: error.message,
+            data: null
+        });
+    }
+}
+
+
+module.exports= {createBlog, getAllBlogs, getBlogById, updateBlog, deleteBlog, likeBlog};

@@ -4,6 +4,7 @@ const userRoutes = require ('./routes/userRoutes');
 const blogRoutes = require ('./routes/blogRoutes');
 const commentRoutes = require ('./routes/commentRoutes');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
