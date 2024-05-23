@@ -25,8 +25,11 @@ function Login() {
     try {
       const response = await login(email, password);
       console.log('Login successful:', response);
-      const token = response.token;
+      const token = response.data.token;
       localStorage.setItem('token', token);
+      localStorage.setItem('id', response.data.user._id);
+      localStorage.setItem('userName', response.data.user.userName);
+      localStorage.setItem('email', email);
       navigate('/home');
     } catch (error) {
       console.error('Login failed:', error);

@@ -76,13 +76,13 @@ async function getUserById(req, res) {
             })
         }
 
-        const userBlogs = blogs.filter(blog => blog.user._id.toString() === user._id.toString());
+        // const userBlogs = blogs.filter(blog => blog.user._id.toString() === user._id.toString());
 
 
         res.status(200).json({
             status: true,
             message: 'User retrieved Successfully',
-            data: {user, blogs: userBlogs }
+            data: user 
         })
     } catch (error) {
         res.status(500).json({
