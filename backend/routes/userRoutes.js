@@ -1,21 +1,18 @@
 const express = require ('express');
 const router = express.Router();
 const userController = require ('../controllers/userController');
+const middleware = require ('../middlewares/middleware');
 
-router.post('/users', userController.createUser);
+router.post('/users', middleware.verifyToken, userController.createUser);
 
-router.get('/users', userController.getUsers);
+router.get('/users', middleware.verifyToken, userController.getUsers);
 
-router.get('/users/:id', userController.getUserById);
+router.get('/users/:id', middleware.verifyToken, userController.getUserById);
 
-router.put('/users/:id', userController.updateUser);
+router.put('/users/:id', middleware.verifyToken, userController.updateUser);
 
-router.delete('/users/:id', userController.deleteUser);
+router.delete('/users/:id', middleware.verifyToken, userController.deleteUser);
 
 router.post('/login', userController.login); 
-
-router.get('/verifyToken', userController.verifyToken, (req, res) => {
-    res.status(200).json({ status: true, message: 'Token verified' });
-});
 
 module.exports= router;

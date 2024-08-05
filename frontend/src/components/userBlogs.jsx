@@ -18,7 +18,7 @@ const UserBlogs = () => {
       }
 
       try {
-        const response = await axios.get(`http://localhost:3000/users/${userId}`);
+        const response = await axios.get('http://localhost:3000/blogs');
           if (response.data.status) {
             setUser(response.data.data.user);
             setBlogPosts(response.data.data.userBlogs);
@@ -48,12 +48,10 @@ if (error) {
 
 return (
   <div>
-      {user && (
         <div>
-          <h1>{user.userName}</h1>
           <h1><b>My Blogs</b></h1>
         </div>
-      )}
+        <div>
       {blogPosts.length === 0 ? (
         <div>No blog posts found</div>
       ) : (
@@ -64,6 +62,7 @@ return (
           </div>
         ))
       )}
+      </div>
     </div>
 );
 };

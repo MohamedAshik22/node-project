@@ -3,13 +3,7 @@ const mongoose = require('mongoose')
 const blogSchema = new mongoose.Schema ({
    
     title: String,
-
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
     
-    },
-
     body: String,
 
     comments: [{
@@ -21,9 +15,18 @@ const blogSchema = new mongoose.Schema ({
     likes: {
         type: Number,
         default: 0
-    }
+    },
 
-  
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    
+    },
+
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
 });
 
 const Blog = mongoose.model('Blog', blogSchema);

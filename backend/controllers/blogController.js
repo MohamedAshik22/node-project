@@ -4,10 +4,14 @@ const User = require('../models/user');
 
 async function createBlog(req,res) {
     try{
-        const{title, body, user} =req.body;
-        const blogs = new Blog({title, body, user});
+        const{title, body} =req.body;
+        const userId = req.user._id;
+
+
+
+        const blogs = new Blog({title, body, createdBy: userId });
         await blogs.save();
-        await User.findByIdAndUpdate(user, { $push: { blogs: blogs._id } });
+        await User.findByIdAndUpdate(userId, { $push: { blogs: blogs._id } });
         res.status(201).json({
             status: true,
             message: 'Blog Created Successfully',
@@ -26,10 +30,10 @@ async function createBlog(req,res) {
 async function getAllBlogs(req,res){
     try{
         const blogs=await Blog.find()
-        .populate('user', 'userName email')
+        .populate('createdBy', 'userName email')
         .populate('comments')
         .exec();
-        res.status(201).json({
+        res.status(200).json({
             status:true,
             message:'All Blog Post retrieved successfully',
             data:blogs
@@ -46,7 +50,7 @@ async function getAllBlogs(req,res){
 async function getBlogById(req,res){
     try{
         const blog=await Blog.findById(req.params.id)
-        .populate('user', 'userName email')
+        .populate('createdBy', 'userName email')
         .populate('comments')
         .exec();
         if(!blog){
@@ -56,7 +60,7 @@ async function getBlogById(req,res){
                 data:null
             })
         }
-        res.status(201).json({
+        res.status(200).json({
             status:true,
             message:'Blog Post retrieved successfully',
             data:blog

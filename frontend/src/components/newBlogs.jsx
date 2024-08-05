@@ -5,7 +5,7 @@ import axios from 'axios';
 const NewBlog = () => {
     const initialFormData = {
         title: '',
-        body: ''
+        body: '',
     };
 
     const [formData, setFormData] = useState(initialFormData);
@@ -22,7 +22,20 @@ const NewBlog = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios.post('http://localhost:3000/blogs', formData);
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                console.error('No token available');
+                return;
+            }
+
+            const headers = {
+                'Authorization': token
+            };
+
+            const response = await axios.post('http://localhost:3000/blogs', formData, {
+                headers: headers
+            });
             console.log(response.data);
             setFormData(initialFormData);
         } catch (error) {

@@ -1,8 +1,9 @@
 const express = require ('express');
 const router = express.Router();
 const blogController = require ('../controllers/blogController');
+const middleware = require ('../middlewares/middleware')
 
-router.post('/blogs', blogController.createBlog);
+router.post('/blogs', middleware.verifyToken, blogController.createBlog);
 
 router.get('/blogs', blogController.getAllBlogs);
 

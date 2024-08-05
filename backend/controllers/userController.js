@@ -1,7 +1,7 @@
 const User = require('../models/user');
 const Blog = require('../models/blog')
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+
 
 async function createUser(req, res) {
     const { userName, email, password } = req.body;
@@ -179,25 +179,6 @@ async function login(req, res) {
     }
 }
 
-function verifyToken(req, res, next) {
-    const token = req.header('Authorization');
-    if (!token)
-        return res.status(401).json(
-            {
-                status: false,
-                message: 'Access denied. No token provided.',
-            });
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        next();
-    } catch (error) {
-        res.status(400).json(
-            {
-                status: false,
-                message: 'Invalid token.'
-            });
-    }
-}
 
-module.exports = { createUser, getUsers, getUserById, updateUser, deleteUser, login, verifyToken };
+
+module.exports = { createUser, getUsers, getUserById, updateUser, deleteUser, login };
