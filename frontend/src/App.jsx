@@ -7,6 +7,7 @@ import NewBlog from './components/newBlogs';
 import Blogs from './components/blogs';
 import BlogDetailPage from './components/blogDetailPage';
 import './App.css';
+import UserBlogs from './components/userBlogs';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,14 +22,11 @@ function App() {
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <Routes>
             <Route path="/" element={<Login onLoginSuccess={handleLoginSuccess} />} />
-            {/* <Route path="*" element={isLoggedIn ? <Navigate to="/home" /> : <Navigate to="/" />} /> */}
             <Route path="/signup" element={<Signup />} />
-            {/* <Route path="/home" element={isLoggedIn ? <Home /> : <Navigate to="/" />} /> */}
             <Route path="/home" element={<Home />} />
             <Route path="/blog/create" element={<NewBlog />} />
-            <Route path="/blogs" element={<Blogs />} />
+            <Route path="/user-blogs" element={<UserBlogs />} />
             <Route path="/blog-detail/:blogId" element={<BlogDetailPage />} />
-
           </Routes>
         </div>
       </div>

@@ -55,7 +55,7 @@ const Blogs = () => {
                     {blogs.map(blog => (
                         <div key={blog._id} className="border-b border-gray-300 py-4" >
                             <div className="text-xl font-semibold cursor-pointer" onClick={() => navigateToBlog(blog._id)}>{blog.title}</div>
-                            <p className="mt-2">{blog.body}</p>
+                            <p className="mt-2">{blog.body.split(' ').slice(0, 10).join(' ')}...</p>
                             <div className="flex space-x-4">
                                 {/* <LikeButton /> */}                                
                                 <button className="text-pink-500 hover:text-pink-700 font-bold py-1 px-2 rounded">Like</button>

@@ -1,5 +1,5 @@
 const User = require('../models/user');
-const blogs = require('../models/blog')
+const Blog = require('../models/blog')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -76,13 +76,12 @@ async function getUserById(req, res) {
             })
         }
 
-        // const userBlogs = blogs.filter(blog => blog.user._id.toString() === user._id.toString());
-
+        const userBlogs = await Blog.find({ user: user._id });
 
         res.status(200).json({
             status: true,
             message: 'User retrieved Successfully',
-            data: user 
+            data: { user, userBlogs } 
         })
     } catch (error) {
         res.status(500).json({

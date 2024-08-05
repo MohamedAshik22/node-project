@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
 
 
 function BlogDetailPage() {
@@ -13,6 +15,12 @@ function BlogDetailPage() {
     const [commentInput, setCommentInput] = useState('');
     const [showComments, setShowComments] = useState(false);
     const params = useParams();
+
+    const navigate = useNavigate();
+
+    const handleBackClick = () => {
+        navigate('/home'); 
+      };
 
     useEffect(() => {
         console.log(params)
@@ -55,7 +63,7 @@ function BlogDetailPage() {
 
     const handleCommentSubmit = async () => {
         const { blogId } = params;
-        const userId = localStorage.getItem('id'); 
+        const userId = localStorage.getItem('id');
         try {
             const response = await axios.post('http://localhost:3000/comments', {
                 userId,
@@ -86,15 +94,24 @@ function BlogDetailPage() {
         return <div>Blog not found</div>;
     }
 
+   
+
     return (
-        <div>
-            <h2 className="text-xl font-semibold">{blog.title}</h2>
+        <div className='bg-pink-100'>
+            <div className="flex items-center bg-gray-300">
+                <button className="mr-4 flex items-center" onClick={handleBackClick}>
+                    <i className="fas fa-arrow-left mr-2"></i> 
+                </button>
+                <div className="flex-grow flex justify-center bg-blue-200">
+                <h2 className="text-xl font-semibold">{blog.title}</h2>
+                </div>
+            </div>
             <p className="mt-2">{blog.body}</p>
             <div className="mt-4 flex space-x-4">
                 <button className="px-4 py-2 bg-blue-500 text-white rounded">Like</button>
                 <button className="px-4 py-2 bg-blue-500 text-white rounded">Share</button>
                 <button className="px-4 py-2 bg-blue-500 text-white rounded" onClick={() => setShowComments(!showComments)}>Comment</button>
-            </div>       
+            </div>
             {showComments && (
                 <div className="mt-4">
                     <div>

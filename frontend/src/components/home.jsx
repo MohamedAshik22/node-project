@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Blogs from './blogs';
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +6,16 @@ import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
 
+  const [username, setUsername] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Retrieve the username from localStorage
+    const storedUsername = localStorage.getItem('userName');
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -18,11 +27,11 @@ const Home = () => {
     <div className="h-screen  flex">
       <div className="bg-blue-300 text-gray-600 w-1/3 flex-none  relative">
         <div className="px-6 py-4 lg:px-8 flex justify-between items-center">
-          <div className="text-lg font-bold px-1 "> Profile</div>
+          <div className="text-lg font-bold px-1 "> {username}</div>
         </div>
         <nav>
           <ul className="py-4">
-            <li className="px-4 py-2 hover:bg-gray-400"> <button><Link to="/myblogs">My Blogs</Link></button></li>
+            <li className="px-4 py-2 hover:bg-gray-400"> <button><Link to="/user-blogs">My Blogs</Link></button></li>
             <li className="px-4 py-2 hover:bg-gray-400"> <button>Filter</button></li>
           </ul>
         </nav>
